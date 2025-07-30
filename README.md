@@ -4,7 +4,7 @@ A full-featured e-commerce web application with both **Admin** and **User** view
 
 ## 🔥 Live Demo
 
-🌐 [View Demo](https://your-live-demo-link.com)
+🌐 [View Demo](https://ecommerce-75.vercel.app)
 
 ## 📸 Screenshots
 
@@ -41,7 +41,7 @@ A full-featured e-commerce web application with both **Admin** and **User** view
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/abhishekkr8/Intership_project.git
+   git clone https://github.com/abhishekkr8/Ecommerce
    ```
 
 2. Navigate to the project directory:
