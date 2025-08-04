@@ -105,10 +105,21 @@ const loginUser = async (req, res) => {
 //logout
 
 const logoutUser = (req, res) => {
-  res.clearCookie("token").json({
-    success: true,
-    message: "Logged out successfully!",
-  });
+  // res.clearCookie("token").json({
+  //   success: true,
+  //   message: "Logged out successfully!",
+  // });
+
+  res.clearCookie("token", {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "None",
+  path: "/", // this must match the original cookie path
+});
+res.status(200).json({
+  success: true,
+  message: "Logged out successfully",
+});
 };
 
 //auth middleware
