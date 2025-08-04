@@ -10,7 +10,7 @@ A full-featured e-commerce web application with both **Admin** and **User** view
 
 | Home Page                        | Product Page                      |
 |----------------------------------|-----------------------------------|
-| ![Home](image.png)    | ![Product](screenshots/product.png) |
+| ![Home](home.png)    | ![Product](product.png) |
 
 ## ✨ Features
 
