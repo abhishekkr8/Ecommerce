@@ -32,8 +32,12 @@ function ShoppingProductTile({
           ) : null}
         </div>
         <CardContent className="p-4">
-          <h2 className="text-xl font-bold mb-2">{product?.title}</h2>
-          <div className="flex justify-between items-center mb-2">
+          {/* <h2 className="text-xl font-bold mb-2">{product?.title}</h2> */}
+          <h2 className="text-base font-semibold mb-1 line-clamp-2 leading-tight">
+            {product?.title}
+          </h2>
+
+          <div className="flex justify-between items-center mb-3">
             <span className="text-[16px] text-muted-foreground">
               {categoryOptionsMap[product?.category]}
             </span>
@@ -94,35 +98,38 @@ function ShoppingProductTile({
           </div> */}
 
           <div className="flex justify-between items-start mb-2">
-  <div className="flex flex-col">
-    <div className="flex items-center gap-2">
-      {product?.salePrice > 0 ? (
-        <span className="line-through text-lg font-semibold text-primary">
-          ${product?.price}
-        </span>
-      ) : (
-        <span className="text-lg font-semibold text-primary">
-          ${product?.price}
-        </span>
-      )}
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2">
+                {product?.salePrice > 0 ? (
+                  <span className="line-through text-lg font-semibold text-primary">
+                    ${product?.price}
+                  </span>
+                ) : (
+                  <span className="text-lg font-semibold text-primary">
+                    ${product?.price}
+                  </span>
+                )}
 
-      {product?.salePrice > 0 && product?.salePrice < product?.price && (
-        <span className="text-sm text-green-600 font-medium">
-          Save {Math.round(
-            ((product.price - product.salePrice) / product.price) * 100
-          )}%
-        </span>
-      )}
-    </div>
-  </div>
+                {product?.salePrice > 0 &&
+                  product?.salePrice < product?.price && (
+                    <span className="text-sm text-green-600 font-medium">
+                      Save{" "}
+                      {Math.round(
+                        ((product.price - product.salePrice) / product.price) *
+                          100
+                      )}
+                      %
+                    </span>
+                  )}
+              </div>
+            </div>
 
-  {product?.salePrice > 0 && (
-    <span className="text-lg font-semibold text-primary">
-      ${product?.salePrice}
-    </span>
-  )}
-</div>
-
+            {product?.salePrice > 0 && (
+              <span className="text-lg font-semibold text-primary">
+                ${product?.salePrice}
+              </span>
+            )}
+          </div>
         </CardContent>
       </div>
       <CardFooter>
