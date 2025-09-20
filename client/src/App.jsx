@@ -111,14 +111,7 @@ function App() {
               </CheckAuth>
             }
           />
-          <Route
-            path="paypal-return"
-            element={
-              <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-                <PaypalReturnPage />
-              </CheckAuth>
-            }
-          />
+          <Route path="paypal-return" element={<PaypalReturnPage />} />
           <Route
             path="payment-success"
             element={
@@ -127,14 +120,7 @@ function App() {
               </CheckAuth>
             }
           />
-          <Route
-            path="paypal-cancel"
-            element={
-              <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-                <PaypalCancelPage />
-              </CheckAuth>
-            }
-          />
+          <Route path="paypal-cancel" element={<PaypalCancelPage />} />
         </Route>
         <Route path="/unauth-page" element={<UnauthPage />} />
         <Route path="*" element={<NotFound />} />
