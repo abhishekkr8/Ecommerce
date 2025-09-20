@@ -43,7 +43,7 @@ function UserCartItemsContent({ cartItem }) {
 
     dispatch(
       updateCartQuantity({
-        userId: user?.id,
+        userId: user?.id || null, // Allow null for non-authenticated users
         productId: getCartItem?.productId,
         quantity:
           typeOfAction === "plus"
@@ -61,7 +61,7 @@ function UserCartItemsContent({ cartItem }) {
 
   function handleCartItemDelete(getCartItem) {
     dispatch(
-      deleteCartItem({ userId: user?.id, productId: getCartItem?.productId })
+      deleteCartItem({ userId: user?.id || null, productId: getCartItem?.productId }) // Allow null for non-authenticated users
     ).then((data) => {
       if (data?.payload?.success) {
         toast({

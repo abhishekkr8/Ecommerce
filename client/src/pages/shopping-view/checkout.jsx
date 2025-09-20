@@ -19,9 +19,12 @@ function ShoppingCheckout() {
 
   console.log(currentSelectedAddress, "cartItems");
 
+  // Filter out null/invalid cart items
+  const validCartItems = cartItems?.items?.filter(item => item && item.productId && item.title) || [];
+
   const totalCartAmount =
-    cartItems && cartItems.items && cartItems.items.length > 0
-      ? cartItems.items.reduce(
+    validCartItems.length > 0
+      ? validCartItems.reduce(
           (sum, currentItem) =>
             sum +
             (currentItem?.salePrice > 0
@@ -33,7 +36,7 @@ function ShoppingCheckout() {
       : 0;
 
   function handleInitiatePaypalPayment() {
-    if (cartItems.length === 0) {
+    if (validCartItems.length === 0) {
       toast({
         title: "Your cart is empty. Please add items to proceed",
         variant: "destructive",
@@ -50,10 +53,13 @@ function ShoppingCheckout() {
       return;
     }
 
+    // Set loading state immediately to prevent multiple clicks
+    setIsPaymemntStart(true);
+
     const orderData = {
       userId: user?.id,
       cartId: cartItems?._id,
-      cartItems: cartItems.items.map((singleCartItem) => ({
+      cartItems: validCartItems.map((singleCartItem) => ({
         productId: singleCartItem?.productId,
         title: singleCartItem?.title,
         image: singleCartItem?.image,
@@ -84,8 +90,10 @@ function ShoppingCheckout() {
     dispatch(createNewOrder(orderData)).then((data) => {
       console.log(data, "abhishek");
       if (data?.payload?.success) {
+        // Keep loading state as true - redirect will happen
         setIsPaymemntStart(true);
       } else {
+        // Reset loading state if order creation failed
         setIsPaymemntStart(false);
       }
     });
@@ -106,9 +114,9 @@ function ShoppingCheckout() {
           setCurrentSelectedAddress={setCurrentSelectedAddress}
         />
         <div className="flex flex-col gap-4">
-          {cartItems && cartItems.items && cartItems.items.length > 0
-            ? cartItems.items.map((item) => (
-                <UserCartItemsContent key={item.id || item.productId} cartItem={item} />
+          {validCartItems.length > 0
+            ? validCartItems.map((item) => (
+                <UserCartItemsContent key={item.productId} cartItem={item} />
               ))
             : null}
           <div className="mt-8 space-y-4">
@@ -118,7 +126,11 @@ function ShoppingCheckout() {
             </div>
           </div>
           <div className="mt-4 w-full">
-            <Button onClick={handleInitiatePaypalPayment} className="w-full">
+            <Button 
+              onClick={handleInitiatePaypalPayment} 
+              className="w-full"
+              disabled={isPaymentStart}
+            >
               {isPaymentStart
                 ? "Processing Paypal Payment..."
                 : "Checkout with Paypal"}

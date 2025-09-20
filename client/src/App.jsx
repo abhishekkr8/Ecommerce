@@ -14,10 +14,12 @@ import ShoppingListing from "./pages/shopping-view/listing";
 import ShoppingCheckout from "./pages/shopping-view/checkout";
 import ShoppingAccount from "./pages/shopping-view/account";
 import CheckAuth from "./components/common/check-auth";
+import ProtectedCheckout from "./components/common/protected-checkout";
 import UnauthPage from "./pages/unauth-page";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { checkAuth } from "./store/auth-slice";
+import { fetchCartItems } from "./store/shop/cart-slice";
 import { Skeleton } from "@/components/ui/skeleton";
 import PaypalReturnPage from "./pages/shopping-view/paypal-return";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success";
@@ -34,6 +36,13 @@ function App() {
     dispatch(checkAuth());
   }, [dispatch]);
 
+  // Fetch cart items when user authentication state changes
+  useEffect(() => {
+    if (!isLoading) {
+      dispatch(fetchCartItems(user?.id || null));
+    }
+  }, [dispatch, isAuthenticated, user?.id, isLoading]);
+
   if (isLoading) return <Skeleton className="w-[800] bg-black h-[600px]" />;
 
   console.log(isLoading, user);
@@ -41,15 +50,11 @@ function App() {
   return (
     <div className="flex flex-col overflow-hidden bg-white">
       <Routes>
-        <Route
-          path="/"
-          element={
-            <CheckAuth
-              isAuthenticated={isAuthenticated}
-              user={user}
-            ></CheckAuth>
-          }
-        />
+        {/* Root route - direct to shopping home for public access */}
+        <Route path="/" element={<ShoppingLayout />}>
+          <Route index element={<ShoppingHome />} />
+        </Route>
+        
         <Route
           path="/auth"
           element={
@@ -83,20 +88,53 @@ function App() {
 
         <Route
           path="/shop"
-          element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-              <ShoppingLayout />
-            </CheckAuth>
-          }
+          element={<ShoppingLayout />}
         >
           <Route path="home" element={<ShoppingHome />} />
           <Route path="listing" element={<ShoppingListing />} />
-          <Route path="checkout" element={<ShoppingCheckout />} />
-          <Route path="account" element={<ShoppingAccount />} />
-          <Route path="paypal-return" element={<PaypalReturnPage />} />
-          <Route path="payment-success" element={<PaymentSuccessPage />} />
-          <Route path="paypal-cancel" element={<PaypalCancelPage />} />
           <Route path="search" element={<SearchProducts />} />
+          
+          {/* Protected routes requiring authentication */}
+          <Route
+            path="checkout"
+            element={
+              <ProtectedCheckout>
+                <ShoppingCheckout />
+              </ProtectedCheckout>
+            }
+          />
+          <Route
+            path="account"
+            element={
+              <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+                <ShoppingAccount />
+              </CheckAuth>
+            }
+          />
+          <Route
+            path="paypal-return"
+            element={
+              <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+                <PaypalReturnPage />
+              </CheckAuth>
+            }
+          />
+          <Route
+            path="payment-success"
+            element={
+              <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+                <PaymentSuccessPage />
+              </CheckAuth>
+            }
+          />
+          <Route
+            path="paypal-cancel"
+            element={
+              <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+                <PaypalCancelPage />
+              </CheckAuth>
+            }
+          />
         </Route>
         <Route path="/unauth-page" element={<UnauthPage />} />
         <Route path="*" element={<NotFound />} />

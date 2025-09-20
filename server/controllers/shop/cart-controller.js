@@ -229,9 +229,71 @@ const deleteCartItem = async (req, res) => {
   }
 };
 
+// Sync local cart with server cart when user logs in
+const syncCart = async (req, res) => {
+  try {
+    const { userId, localCartItems } = req.body;
+
+    if (!userId || !Array.isArray(localCartItems)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid data provided!",
+      });
+    }
+
+    // Get existing server cart
+    let serverCart = await Cart.findOne({ userId });
+    
+    if (!serverCart) {
+      serverCart = new Cart({ userId, items: [] });
+    }
+
+    // Merge local cart items with server cart
+    for (const localItem of localCartItems) {
+      const { productId, quantity } = localItem;
+      
+      // Verify product exists
+      const product = await Product.findById(productId);
+      if (!product) continue;
+      
+      const existingItemIndex = serverCart.items.findIndex(
+        (item) => item.productId.toString() === productId
+      );
+      
+      if (existingItemIndex === -1) {
+        // Add new item from local cart
+        serverCart.items.push({ productId, quantity });
+      } else {
+        // Merge quantities (add local quantity to server quantity)
+        serverCart.items[existingItemIndex].quantity += quantity;
+      }
+    }
+
+    await serverCart.save();
+    
+    // Return updated cart with populated product details
+    const populatedCart = await Cart.findOne({ userId }).populate({
+      path: "items.productId",
+      select: "image title price salePrice",
+    });
+
+    res.status(200).json({
+      success: true,
+      data: populatedCart,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Error syncing cart",
+    });
+  }
+};
+
 module.exports = {
   addToCart,
   updateCartItemQty,
   deleteCartItem,
   fetchCartItems,
+  syncCart,
 };

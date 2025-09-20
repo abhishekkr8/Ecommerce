@@ -2,9 +2,10 @@ import CommonForm from "@/components/common/form";
 import { useToast } from "@/components/ui/use-toast";
 import { loginFormControls } from "@/config";
 import { loginUser } from "@/store/auth-slice";
+import { syncCartOnLogin, fetchCartItems } from "@/store/shop/cart-slice";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const initialState = {
   email: "",
@@ -15,15 +16,32 @@ function AuthLogin() {
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  const from = location.state?.from || "/shop/home";
 
   function onSubmit(event) {
     event.preventDefault();
 
     dispatch(loginUser(formData)).then((data) => {
       if (data?.payload?.success) {
+        const userId = data.payload.user.id;
+        
+        // Sync cart after successful login
+        dispatch(syncCartOnLogin({ userId })).then((syncResult) => {
+          if (syncResult?.payload?.success) {
+            // After successful sync, fetch cart items with full product details
+            dispatch(fetchCartItems(userId));
+          }
+        });
+        
         toast({
           title: data?.payload?.message,
         });
+        
+        // Redirect to original page or home
+        navigate(from, { replace: true });
       } else {
         toast({
           title: data?.payload?.message,

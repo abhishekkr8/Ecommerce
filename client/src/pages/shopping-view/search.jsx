@@ -59,13 +59,13 @@ function SearchProducts() {
 
     dispatch(
       addToCart({
-        userId: user?.id,
+        userId: user?.id || null, // Allow null for non-authenticated users
         productId: getCurrentProductId,
         quantity: 1,
       })
     ).then((data) => {
       if (data?.payload?.success) {
-        dispatch(fetchCartItems(user?.id));
+        dispatch(fetchCartItems(user?.id || null));
         toast({
           title: "Product is added to cart",
         });
