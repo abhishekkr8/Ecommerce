@@ -34,38 +34,24 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { checkAuth } from "@/store/auth-slice";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 
 function PaypalCancelPage() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
-
-  // Check authentication on component mount
-  useEffect(() => {
-    dispatch(checkAuth());
-  }, [dispatch]);
 
   useEffect(() => {
     // Clear any pending order data
     sessionStorage.removeItem("currentOrderId");
-    
-    // Redirect to login if not authenticated after loading
-    if (!isLoading && !isAuthenticated) {
-      navigate("/auth/login");
-    }
-  }, [isAuthenticated, isLoading, navigate]);
+  }, []);
 
   return (
     <Card className="p-10">
       <CardHeader className="p-0">
         <CardTitle className="text-4xl">Payment is Failed!</CardTitle>
       </CardHeader>
-      <Button className="mt-5" onClick={() => navigate("/shop/account")}>
-        View Orders
+      <Button className="mt-5" onClick={() => navigate("/shop/home")}>
+        Back to Shopping
       </Button>
     </Card>
   );
